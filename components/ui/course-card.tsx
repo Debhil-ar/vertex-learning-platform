@@ -8,6 +8,7 @@ interface CourseCardProps {
   duration: string;
   moduleCount: number;
   avatarLetter: string;
+  avatarBg?: string;
   className?: string;
 }
 
@@ -18,6 +19,7 @@ export function CourseCard({
   duration,
   moduleCount,
   avatarLetter,
+  avatarBg = "bg-neutral-900",
   className,
 }: CourseCardProps) {
   return (
@@ -27,7 +29,12 @@ export function CourseCard({
         className,
       )}
     >
-      <div className="flex size-11 items-center justify-center rounded-sm bg-neutral-900 font-display text-lg font-bold text-white">
+      <div
+        className={cn(
+          "flex size-11 items-center justify-center rounded-sm font-display text-lg font-bold text-white",
+          avatarBg,
+        )}
+      >
         {avatarLetter}
       </div>
       <h3 className="mt-4 text-heading-3 text-neutral-900">{title}</h3>
