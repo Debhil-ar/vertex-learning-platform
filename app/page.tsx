@@ -1,68 +1,140 @@
-import Image from "next/image";
+"use client";
+
+import { type FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Star } from "lucide-react";
+import { Nav } from "@/components/ui/nav";
+import { Button } from "@/components/ui/button";
+import { SearchInput } from "@/components/ui/input";
+import { CourseCard } from "@/components/ui/course-card";
+
+const courses = [
+  {
+    title: "Next.js for Production",
+    description: "Build scalable, high-performance web applications with Next.js.",
+    level: "Intermediate",
+    duration: "18h 24m",
+    moduleCount: 12,
+    avatarLetter: "N",
+    avatarBg: "bg-neutral-900",
+  },
+  {
+    title: "Docker Essentials",
+    description: "Containerize applications and streamline your development workflow.",
+    level: "Beginner",
+    duration: "10h 12m",
+    moduleCount: 8,
+    avatarLetter: "D",
+    avatarBg: "bg-sky-500",
+  },
+  {
+    title: "TypeScript Deep Dive",
+    description: "Go beyond the basics and write safer, more expressive code.",
+    level: "Intermediate",
+    duration: "14h 36m",
+    moduleCount: 10,
+    avatarLetter: "TS",
+    avatarBg: "bg-blue-600",
+  },
+];
+
+const barHeights = [40, 64, 96, 56, 80, 48, 72, 100, 60, 88, 44, 76];
 
 export default function Home() {
+  const router = useRouter();
+  const [query, setQuery] = useState("");
+
+  function handleSearch(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
+    <div className="flex flex-1 flex-col bg-neutral-50">
+      <Nav />
+
+      <main className="flex flex-1 flex-col">
+        <section className="border-b border-neutral-200 px-6 pt-20 pb-16 text-center">
+          <div className="mx-auto w-full max-w-[1440px]">
+            <span className="inline-flex items-center rounded-xs border border-primary-200 bg-primary-100 px-3 py-1 text-xs font-medium uppercase tracking-wide text-primary-500">
+              Intelligent Learning
+            </span>
+
+            <h1 className="mx-auto mt-6 max-w-3xl font-display text-display-1 text-neutral-900">
+              Search your learning in plain English.
+            </h1>
+
+            <p className="mx-auto mt-4 max-w-xl text-body-lg text-neutral-500">
+              Vertex understands what you want to learn and finds the exact lessons across all
+              your courses.
+            </p>
+
+            <div className="mt-8 flex justify-center">
+              <Button
+                variant="primary"
+                icon={<ArrowRight className="size-4" strokeWidth={2} />}
+                onClick={() => router.push("/courses")}
+              >
+                Explore Courses
+              </Button>
+            </div>
+
+            <form onSubmit={handleSearch} className="mx-auto mt-8 max-w-xl">
+              <SearchInput
+                placeholder="Ask anything about your learning..."
+                shortcut="⌘K"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </form>
+          </div>
+        </section>
+
+        <section className="mx-auto w-full max-w-[1440px] px-6 py-12">
+          <div className="flex items-center justify-between">
+            <h2 className="font-display text-heading-1 text-neutral-900">All Courses</h2>
             <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              href="/courses"
+              className="inline-flex items-center gap-1 text-body font-medium text-primary-500 hover:text-primary-400"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+              View all courses
+              <ArrowRight className="size-4" strokeWidth={2} />
+            </a>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {courses.map((course) => (
+              <CourseCard key={course.title} {...course} />
+            ))}
+          </div>
+        </section>
+
+        <section className="relative overflow-hidden border-t border-neutral-200 px-6 pt-10 pb-0">
+          <div className="mx-auto w-full max-w-[1440px]">
+            <div className="flex items-center justify-center gap-4">
+              <span className="h-px w-24 bg-neutral-200 sm:w-40" />
+              <span className="inline-flex items-center gap-2 text-body text-neutral-700">
+                <Star className="size-4 text-primary-500" strokeWidth={2} />
+                New courses and lessons added every week.
+              </span>
+              <span className="h-px w-24 bg-neutral-200 sm:w-40" />
+            </div>
+
+            <div className="mt-10 flex h-40 items-end justify-center gap-3 sm:gap-4">
+              {barHeights.map((height, i) => (
+                <div
+                  key={i}
+                  className="w-8 rounded-t-xs sm:w-10"
+                  style={{
+                    height: `${height}%`,
+                    background:
+                      "linear-gradient(to top, rgba(251,146,60,0.9), rgba(251,146,60,0))",
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
