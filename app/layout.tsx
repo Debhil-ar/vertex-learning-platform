@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   description: "An AI-powered learning platform with intelligent content search.",
 };
 
+/** Renders the shared application shell with authentication and live content updates. */
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html

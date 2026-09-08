@@ -3,6 +3,7 @@ import 'server-only'
 import { LESSON_BY_SLUG_QUERY } from '../queries/lesson'
 import { sanityFetch } from './live'
 
+/** Fetches a lesson and its parent course by slug. */
 export async function getLessonBySlug(slug: string) {
   const { data } = await sanityFetch({ query: LESSON_BY_SLUG_QUERY, params: { slug } })
   return data
