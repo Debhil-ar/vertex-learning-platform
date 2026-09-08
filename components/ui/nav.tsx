@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Bell } from "lucide-react";
+import { SignInButton, SignUpButton, Show, UserButton } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 
 interface NavProps {
@@ -51,13 +51,27 @@ export function Nav({ className, current }: NavProps) {
           >
             <Bell className="size-5" strokeWidth={2} />
           </button>
-          <Image
-            src="/avatar-placeholder.svg"
-            alt="Your account"
-            width={36}
-            height={36}
-            className="size-9 rounded-full"
-          />
+          <Show when="signed-out">
+            <SignInButton>
+              <button
+                type="button"
+                className="text-body text-neutral-700 hover:text-primary-500"
+              >
+                Sign in
+              </button>
+            </SignInButton>
+            <SignUpButton>
+              <button
+                type="button"
+                className="rounded-xs bg-primary-500 px-3 py-1.5 text-body text-white hover:bg-primary-400"
+              >
+                Sign up
+              </button>
+            </SignUpButton>
+          </Show>
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
         </div>
       </div>
     </nav>
