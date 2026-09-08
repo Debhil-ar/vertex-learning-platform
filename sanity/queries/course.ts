@@ -17,7 +17,10 @@ export const COURSES_QUERY = defineQuery(/* groq */ `
     instructor->{ ${instructorSummaryFragment} },
     category->{ ${categorySummaryFragment} },
     "moduleCount": count(modules),
-    "lessonCount": count(modules[].lessons)
+    "lessonCount": count(modules[].lessons),
+    modules[]{
+      lessons[]->{ duration }
+    }
   }
 `)
 

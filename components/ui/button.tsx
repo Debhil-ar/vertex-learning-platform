@@ -1,4 +1,5 @@
 import { type ComponentPropsWithoutRef, type ReactNode } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "tertiary" | "text";
@@ -13,9 +14,13 @@ const variantClasses: Record<ButtonVariant, string> = {
   text: "text-neutral-700 hover:text-primary-500 disabled:text-neutral-300 px-0",
 };
 
+const baseClasses =
+  "inline-flex h-11 items-center justify-center gap-1.5 rounded-md font-sans text-sm font-medium transition-colors disabled:cursor-not-allowed";
+
 interface ButtonProps extends ComponentPropsWithoutRef<"button"> {
   variant?: ButtonVariant;
   icon?: ReactNode;
+  href?: string;
 }
 
 export function Button({
@@ -23,17 +28,22 @@ export function Button({
   icon,
   className,
   children,
+  href,
   ...props
 }: ButtonProps) {
+  const classes = cn(baseClasses, variantClasses[variant], className);
+
+  if (href) {
+    return (
+      <Link href={href} className={classes}>
+        {children}
+        {icon}
+      </Link>
+    );
+  }
+
   return (
-    <button
-      className={cn(
-        "inline-flex h-11 items-center justify-center gap-1.5 rounded-md font-sans text-sm font-medium transition-colors disabled:cursor-not-allowed",
-        variantClasses[variant],
-        className,
-      )}
-      {...props}
-    >
+    <button className={classes} {...props}>
       {children}
       {icon}
     </button>
