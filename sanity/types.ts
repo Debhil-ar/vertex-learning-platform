@@ -104,9 +104,11 @@ export type Module = {
   _type: "module";
   title: string;
   summary?: string;
-  lessons: Array<{
-    _key: string;
-  } & LessonReference>;
+  lessons: Array<
+    {
+      _key: string;
+    } & LessonReference
+  >;
 };
 
 export type InstructorReference = {
@@ -152,9 +154,11 @@ export type Course = {
   }>;
   instructor: InstructorReference;
   category: CategoryReference;
-  modules: Array<{
-    _key: string;
-  } & Module>;
+  modules: Array<
+    {
+      _key: string;
+    } & Module
+  >;
 };
 
 export type Category = {
@@ -284,7 +288,27 @@ export type Geopoint = {
   alt?: number;
 };
 
-export type AllSanitySchemaTypes = SanityImageAssetReference | Lesson | SanityImageCrop | SanityImageHotspot | Slug | LessonReference | Module | InstructorReference | CategoryReference | Course | Category | Instructor | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageMetadata | SanityFileAsset | SanityAssetSourceData | SanityImageAsset | Geopoint;
+export type AllSanitySchemaTypes =
+  | SanityImageAssetReference
+  | Lesson
+  | SanityImageCrop
+  | SanityImageHotspot
+  | Slug
+  | LessonReference
+  | Module
+  | InstructorReference
+  | CategoryReference
+  | Course
+  | Category
+  | Instructor
+  | SanityImagePaletteSwatch
+  | SanityImagePalette
+  | SanityImageDimensions
+  | SanityImageMetadata
+  | SanityFileAsset
+  | SanityAssetSourceData
+  | SanityImageAsset
+  | Geopoint;
 
 // Source: ../sanity/queries/category.ts
 // Variable: CATEGORY_BY_SLUG_QUERY
@@ -327,7 +351,7 @@ export type CATEGORIES_QUERY_RESULT = Array<{
 
 // Source: ../sanity/queries/course.ts
 // Variable: COURSES_QUERY
-// Query: *[_type == "course" && defined(slug.current)] | order(title asc) {    _id,    title,    "slug": slug.current,    summary,    coverImage {   asset->{    _id,    url,    metadata { lqip, dimensions }  },  alt },    level,    price,    popular,    studentCount,    instructor->{   _id,  name,  "slug": slug.current,  photo {   asset->{    _id,    url,    metadata { lqip, dimensions }  },  alt } },    category->{   _id,  title,  "slug": slug.current },    "moduleCount": count(modules),    "lessonCount": count(modules[].lessons)  }
+// Query: *[_type == "course" && defined(slug.current)] | order(title asc) {    _id,    title,    "slug": slug.current,    summary,    coverImage {   asset->{    _id,    url,    metadata { lqip, dimensions }  },  alt },    level,    price,    popular,    studentCount,    instructor->{   _id,  name,  "slug": slug.current,  photo {   asset->{    _id,    url,    metadata { lqip, dimensions }  },  alt } },    category->{   _id,  title,  "slug": slug.current },    "moduleCount": count(modules),    "lessonCount": count(modules[].lessons),    modules[]{      lessons[]->{ duration }    }  }
 export type COURSES_QUERY_RESULT = Array<{
   _id: string;
   title: string;
@@ -371,6 +395,11 @@ export type COURSES_QUERY_RESULT = Array<{
   };
   moduleCount: number;
   lessonCount: number;
+  modules: Array<{
+    lessons: Array<{
+      duration: string;
+    }>;
+  }>;
 }>;
 
 // Source: ../sanity/queries/course.ts
@@ -558,3 +587,16 @@ export type LESSON_BY_SLUG_QUERY_RESULT = {
   } | null;
 } | null;
 
+// Query TypeMap
+import "@sanity/client";
+declare module "@sanity/client" {
+  interface SanityQueries {
+    '\n  *[_type == "category" && slug.current == $slug][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    description,\n    "courses": *[_type == "course" && references(^._id) && defined(slug.current)]{\n      _id,\n      title,\n      "slug": slug.current,\n      summary,\n      coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n      level,\n      price\n    }\n  }\n': CATEGORY_BY_SLUG_QUERY_RESULT;
+    '\n  *[_type == "category"] | order(title asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    description\n  }\n': CATEGORIES_QUERY_RESULT;
+    '\n  *[_type == "course" && defined(slug.current)] | order(title asc) {\n    _id,\n    title,\n    "slug": slug.current,\n    summary,\n    coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    level,\n    price,\n    popular,\n    studentCount,\n    instructor->{ \n  _id,\n  name,\n  "slug": slug.current,\n  photo { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n }\n },\n    category->{ \n  _id,\n  title,\n  "slug": slug.current\n },\n    "moduleCount": count(modules),\n    "lessonCount": count(modules[].lessons),\n    modules[]{\n      lessons[]->{ duration }\n    }\n  }\n': COURSES_QUERY_RESULT;
+    '\n  *[_type == "course" && slug.current == $slug][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    summary,\n    coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    level,\n    price,\n    popular,\n    studentCount,\n    outcomes[]{ icon, title, description },\n    instructor->{ \n  _id,\n  name,\n  "slug": slug.current,\n  photo { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n }\n, expertise, bio },\n    category->{ \n  _id,\n  title,\n  "slug": slug.current\n },\n    modules[]{\n      _key,\n      title,\n      summary,\n      lessons[]->{\n        _id,\n        title,\n        "slug": slug.current,\n        duration,\n        freePreview,\n        poster { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n }\n      }\n    }\n  }\n': COURSE_BY_SLUG_QUERY_RESULT;
+    '\n  *[_type == "course" && defined(slug.current)]{ "slug": slug.current }\n': COURSE_SLUGS_QUERY_RESULT;
+    '\n  *[_type == "instructor" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    photo { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    expertise,\n    bio,\n    "courses": *[_type == "course" && references(^._id) && defined(slug.current)]{\n      _id,\n      title,\n      "slug": slug.current,\n      summary,\n      coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n      level,\n      price\n    }\n  }\n': INSTRUCTOR_BY_SLUG_QUERY_RESULT;
+    '\n  *[_type == "lesson" && slug.current == $slug][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    videoUrl,\n    poster { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    duration,\n    freePreview,\n    studentCount,\n    notes,\n    keyPoints,\n    proTip,\n    resources[]{ type, title, description, url },\n    "course": *[_type == "course" && references(^._id)][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      modules[]{\n        title,\n        lessons[]->{ _id }\n      }\n    }\n  }\n': LESSON_BY_SLUG_QUERY_RESULT;
+  }
+}

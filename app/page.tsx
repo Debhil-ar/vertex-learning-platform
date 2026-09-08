@@ -1,53 +1,17 @@
-"use client";
-
-import { type FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import { Nav } from "@/components/ui/nav";
 import { Button } from "@/components/ui/button";
-import { SearchInput } from "@/components/ui/input";
 import { CourseCard } from "@/components/ui/course-card";
-
-const courses = [
-  {
-    title: "Next.js for Production",
-    description: "Build scalable, high-performance web applications with Next.js.",
-    level: "Intermediate",
-    duration: "18h 24m",
-    moduleCount: 12,
-    avatarLetter: "N",
-    avatarBg: "bg-neutral-900",
-  },
-  {
-    title: "Docker Essentials",
-    description: "Containerize applications and streamline your development workflow.",
-    level: "Beginner",
-    duration: "10h 12m",
-    moduleCount: 8,
-    avatarLetter: "D",
-    avatarBg: "bg-sky-500",
-  },
-  {
-    title: "TypeScript Deep Dive",
-    description: "Go beyond the basics and write safer, more expressive code.",
-    level: "Intermediate",
-    duration: "14h 36m",
-    moduleCount: 10,
-    avatarLetter: "TS",
-    avatarBg: "bg-blue-600",
-  },
-];
+import { HomeSearch } from "@/components/ui/home-search";
+import { getCourses } from "@/sanity/lib/course";
+import { toCoursePreview } from "@/lib/course-preview";
 
 const barHeights = [40, 64, 96, 56, 80, 48, 72, 100, 60, 88, 44, 76];
 
-export default function Home() {
-  const router = useRouter();
-  const [query, setQuery] = useState("");
-
-  function handleSearch(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    router.push(`/search?q=${encodeURIComponent(query)}`);
-  }
+export default async function Home() {
+  const courses = await getCourses();
+  const previewCourses = courses.slice(0, 3).map(toCoursePreview);
 
   return (
     <div className="flex flex-1 flex-col bg-neutral-50">
@@ -72,39 +36,34 @@ export default function Home() {
             <div className="mt-8 flex justify-center">
               <Button
                 variant="primary"
+                href="/courses"
                 icon={<ArrowRight className="size-4" strokeWidth={2} />}
-                onClick={() => router.push("/courses")}
               >
                 Explore Courses
               </Button>
             </div>
 
-            <form onSubmit={handleSearch} className="mx-auto mt-8 max-w-xl">
-              <SearchInput
-                placeholder="Ask anything about your learning..."
-                shortcut="⌘K"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </form>
+            <HomeSearch />
           </div>
         </section>
 
         <section className="mx-auto w-full max-w-[1440px] px-6 py-12">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-heading-1 text-neutral-900">All Courses</h2>
-            <a
+            <Link
               href="/courses"
               className="inline-flex items-center gap-1 text-body font-medium text-primary-500 hover:text-primary-400"
             >
               View all courses
               <ArrowRight className="size-4" strokeWidth={2} />
-            </a>
+            </Link>
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => (
-              <CourseCard key={course.title} {...course} />
+            {previewCourses.map((course) => (
+              <Link key={course.slug} href={`/courses/${course.slug}`} className="block">
+                <CourseCard {...course} />
+              </Link>
             ))}
           </div>
         </section>
