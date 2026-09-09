@@ -604,6 +604,32 @@ export type LESSON_BY_SLUG_QUERY_RESULT = {
   } | null;
 } | null;
 
+// Source: ../sanity/queries/search.ts
+// Variable: SEARCH_LESSONS_BY_IDS_QUERY
+// Query: *[_type == "lesson" && _id in $ids]{    _id,    title,    "slug": slug.current,    duration,    freePreview,    studentCount,    keyPoints,    "notesPlainText": pt::text(notes),    "course": *[_type == "course" && references(^._id)][0]{      _id,      title,      "slug": slug.current,      modules[]{        _key,        title,        lessons[]->{ _id }      }    }  }
+export type SEARCH_LESSONS_BY_IDS_QUERY_RESULT = Array<{
+  _id: string;
+  title: string;
+  slug: string;
+  duration: string;
+  freePreview: boolean | null;
+  studentCount: number | null;
+  keyPoints: Array<string> | null;
+  notesPlainText: string;
+  course: {
+    _id: string;
+    title: string;
+    slug: string;
+    modules: Array<{
+      _key: string;
+      title: string;
+      lessons: Array<{
+        _id: string;
+      }>;
+    }>;
+  } | null;
+}>;
+
 // Query TypeMap
 import "@sanity/client";
 declare module "@sanity/client" {
@@ -615,5 +641,6 @@ declare module "@sanity/client" {
     '\n  *[_type == "course" && defined(slug.current)]{ "slug": slug.current }\n': COURSE_SLUGS_QUERY_RESULT;
     '\n  *[_type == "instructor" && slug.current == $slug][0]{\n    _id,\n    name,\n    "slug": slug.current,\n    photo { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    expertise,\n    bio,\n    "courses": *[_type == "course" && references(^._id) && defined(slug.current)]{\n      _id,\n      title,\n      "slug": slug.current,\n      summary,\n      coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n      level,\n      price\n    }\n  }\n': INSTRUCTOR_BY_SLUG_QUERY_RESULT;
     '\n  *[_type == "lesson" && slug.current == $slug][0]{\n    _id,\n    title,\n    "slug": slug.current,\n    videoUrl,\n    poster { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n    duration,\n    freePreview,\n    studentCount,\n    notes,\n    keyPoints,\n    proTip,\n    resources[]{ type, title, description, url },\n    "course": *[_type == "course" && references(^._id)][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      level,\n      coverImage { \n  asset->{\n    _id,\n    url,\n    metadata { lqip, dimensions }\n  },\n  alt\n },\n      modules[]{\n        _key,\n        title,\n        lessons[]->{\n          _id,\n          title,\n          "slug": slug.current,\n          duration,\n          freePreview\n        }\n      }\n    }\n  }\n': LESSON_BY_SLUG_QUERY_RESULT;
+    '\n  *[_type == "lesson" && _id in $ids]{\n    _id,\n    title,\n    "slug": slug.current,\n    duration,\n    freePreview,\n    studentCount,\n    keyPoints,\n    "notesPlainText": pt::text(notes),\n    "course": *[_type == "course" && references(^._id)][0]{\n      _id,\n      title,\n      "slug": slug.current,\n      modules[]{\n        _key,\n        title,\n        lessons[]->{ _id }\n      }\n    }\n  }\n': SEARCH_LESSONS_BY_IDS_QUERY_RESULT;
   }
 }
