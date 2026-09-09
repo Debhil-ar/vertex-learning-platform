@@ -23,6 +23,13 @@ export const categorySummaryFragment = /* groq */ `
 `
 
 // Plain-text projection of a Portable Text field, for text-matching a field
-// that GROQ's match operator cannot search directly.
-export const plainTextFragment = (field: string) =>
-  `"${field}PlainText": pt::text(${field})`
+// that GROQ's match operator cannot search directly. Generic + a literal
+// return type (rather than a plain `string` param) so a query that
+// interpolates this keeps its exact string-literal type — required for
+// TypeGen's `sanityFetch<QueryString>` lookup to resolve the result type
+// instead of widening to `{}`.
+export function plainTextFragment<Field extends string>(
+  field: Field,
+): `"${Field}PlainText": pt::text(${Field})` {
+  return `"${field}PlainText": pt::text(${field})`
+}
