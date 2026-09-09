@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Nav } from "@/components/ui/nav";
 import { CourseCard } from "@/components/ui/course-card";
-import { Select } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { CourseFilterForm } from "@/components/ui/course-filter-form";
 import { getCourses } from "@/sanity/lib/course";
 import { getCategories } from "@/sanity/lib/category";
 import { toCoursePreview } from "@/lib/course-preview";
@@ -12,12 +11,6 @@ export const metadata: Metadata = {
   title: "All Courses | Vertex",
   description: "Browse every course on Vertex.",
 };
-
-const LEVELS = [
-  { value: "beginner", label: "Beginner" },
-  { value: "intermediate", label: "Intermediate" },
-  { value: "advanced", label: "Advanced" },
-];
 
 export default async function CoursesPage({
   searchParams,
@@ -49,39 +42,12 @@ export default async function CoursesPage({
               </p>
             </div>
 
-            <form className="flex flex-wrap items-end gap-3">
-              <div className="w-44">
-                <Select name="category" defaultValue={category ?? ""}>
-                  <option value="">All categories</option>
-                  {categories.map((c) => (
-                    <option key={c._id} value={c.slug}>
-                      {c.title}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <div className="w-40">
-                <Select name="level" defaultValue={level ?? ""}>
-                  <option value="">All levels</option>
-                  {LEVELS.map((l) => (
-                    <option key={l.value} value={l.value}>
-                      {l.label}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <Button type="submit" variant="secondary">
-                Apply
-              </Button>
-              {hasFilters ? (
-                <Link
-                  href="/courses"
-                  className="text-body font-medium text-primary-500 hover:text-primary-400"
-                >
-                  Clear filters
-                </Link>
-              ) : null}
-            </form>
+            <CourseFilterForm
+              categories={categories}
+              defaultCategory={category ?? ""}
+              defaultLevel={level ?? ""}
+              hasFilters={hasFilters}
+            />
           </div>
 
           {filteredCourses.length > 0 ? (

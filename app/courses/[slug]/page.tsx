@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowRight, Bookmark, Clock, Layers, SignalHigh, Users } from "lucide-react";
+import { ArrowRight, Clock, Layers, SignalHigh, Users } from "lucide-react";
 import { Nav } from "@/components/ui/nav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
+import { CourseActions } from "@/components/ui/course-actions";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { CourseOutcomes } from "@/components/ui/course-outcomes";
 import { CourseContent } from "@/components/ui/course-content";
@@ -113,24 +114,12 @@ export default async function CoursePage({
                 ) : null}
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center gap-3">
-                {firstLessonSlug ? (
-                  <Button
-                    variant="primary"
-                    href={`/lessons/${firstLessonSlug}`}
-                    icon={<ArrowRight className="size-4" strokeWidth={2} />}
-                  >
-                    Continue Learning
-                  </Button>
-                ) : null}
-                <Button
-                  variant="tertiary"
-                  icon={<Bookmark className="size-4" strokeWidth={2} />}
-                  type="button"
-                >
-                  Bookmark
-                </Button>
-              </div>
+              <CourseActions
+                courseSlug={slug}
+                courseTitle={course.title}
+                courseLevel={course.level}
+                firstLessonSlug={firstLessonSlug}
+              />
             </div>
           </div>
 
