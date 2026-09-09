@@ -24,9 +24,18 @@ export const LESSON_BY_SLUG_QUERY = defineQuery(/* groq */ `
       _id,
       title,
       "slug": slug.current,
+      level,
+      coverImage { ${imageFragment} },
       modules[]{
+        _key,
         title,
-        lessons[]->{ _id }
+        lessons[]->{
+          _id,
+          title,
+          "slug": slug.current,
+          duration,
+          freePreview
+        }
       }
     }
   }

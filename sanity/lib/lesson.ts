@@ -34,3 +34,79 @@ export function getLessonPosition(lesson: LessonWithCourse) {
 
   return null
 }
+
+/** Every lesson across every module of the course, in display order. */
+function flattenLessons(course: NonNullable<LessonWithCourse['course']>) {
+  return course.modules.flatMap((courseModule) => courseModule.lessons)
+}
+
+/**
+ * The lesson immediately before and after the current one, across module
+ * boundaries, for the sticky prev/next footer.
+ */
+export function getLessonNavigation(lesson: LessonWithCourse) {
+  const course = lesson.course
+  if (!course) return { previous: null, next: null }
+
+  const flat = flattenLessons(course)
+  const currentIndex = flat.findIndex((entry) => entry?._id === lesson._id)
+  if (currentIndex === -1) return { previous: null, next: null }
+
+  return {
+    previous: flat[currentIndex - 1] ?? null,
+    next: flat[currentIndex + 1] ?? null,
+  }
+}
+
+export type LessonStatus = 'complete' | 'current' | 'upcoming'
+
+/**
+ * There is no persisted per-learner progress yet (see AGENTS.md section 7),
+ * so completion is derived from position: every lesson before the one
+ * being viewed, in flattened course order, is treated as complete. This
+ * keeps the sidebar and the course percentage internally consistent as you
+ * navigate between lessons without inventing unrelated numbers.
+ */
+export function getLessonSidebarData(lesson: LessonWithCourse) {
+  const course = lesson.course
+  if (!course) return null
+
+  const flat = flattenLessons(course)
+  const currentIndex = flat.findIndex((entry) => entry?._id === lesson._id)
+  const totalLessons = flat.length
+
+  const modules = course.modules.map((courseModule, moduleIndex) => {
+    const lessons = courseModule.lessons.map((entry) => {
+      const flatIndex = flat.findIndex((flatEntry) => flatEntry?._id === entry._id)
+      const status: LessonStatus =
+        flatIndex === currentIndex ? 'current' : flatIndex < currentIndex ? 'complete' : 'upcoming'
+      return { ...entry, status }
+    })
+
+    const isActive = lessons.some((entry) => entry.status === 'current')
+    const moduleStatus: LessonStatus = isActive
+      ? 'current'
+      : lessons.every((entry) => entry.status === 'complete')
+        ? 'complete'
+        : 'upcoming'
+
+    return {
+      key: courseModule._key,
+      moduleNumber: moduleIndex + 1,
+      title: courseModule.title,
+      lessons,
+      status: moduleStatus,
+      isActive,
+    }
+  })
+
+  const completedCount = currentIndex === -1 ? 0 : currentIndex
+  const percentComplete =
+    totalLessons === 0 ? 0 : Math.round((completedCount / totalLessons) * 100)
+
+  return {
+    course,
+    modules,
+    percentComplete,
+  }
+}
