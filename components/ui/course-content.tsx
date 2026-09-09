@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { ChevronDown, Lock, PlayCircle } from "lucide-react";
 import { cn, formatSecondsAsDuration, parseDurationToSeconds } from "@/lib/utils";
 
@@ -105,6 +106,15 @@ export function CourseContent({ modules }: { modules: Module[] }) {
                       <Link
                         href={`/lessons/${lesson.slug}`}
                         className="flex items-center gap-3 py-3 text-body text-neutral-700 hover:text-primary-500"
+                        onClick={() =>
+                          posthog.capture("course_started", {
+                            lesson_slug: lesson.slug,
+                            module_title: module.title,
+                            lesson_index: lessonIndex + 1,
+                            module_index: index + 1,
+                            is_free_preview: lesson.freePreview ?? false,
+                          })
+                        }
                       >
                         {lesson.freePreview ? (
                           <PlayCircle className="size-4 shrink-0 text-primary-500" strokeWidth={2} />

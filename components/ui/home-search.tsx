@@ -2,6 +2,7 @@
 
 import { type FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { SearchInput } from "@/components/ui/input";
 
 export function HomeSearch() {
@@ -10,6 +11,9 @@ export function HomeSearch() {
 
   function handleSearch(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    posthog.capture("course_search_submitted", {
+      query_length: query.length,
+    });
     router.push(`/search?q=${encodeURIComponent(query)}`);
   }
 
